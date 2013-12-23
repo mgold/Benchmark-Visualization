@@ -101,6 +101,14 @@
                        })
                        .attr("fill", "purple");
 
+                    plot.append("g")
+                       .attr("class", "axis")
+                       .attr("transform", "translate(0," + h + ")")
+                       .call(d3.svg.axis().scale(benchmark))
+
+                    //Remove underscores
+                    plot.selectAll("text")
+                        .text(function(d){ return d.split('_').join(' '); })
 
                 });
 
