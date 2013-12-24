@@ -65,14 +65,27 @@
                     var timeOf1 = time(1);
 
                     var baseline = 0;
+                    var bars = [];
 
                     var entering = plot.selectAll("rect")
                                     .data(benchmarks)
                                     .enter()
 
-                    function drawBars(index){
+                    for(var i = 0; i < series.length; i++){
+                        bars.push(drawBars(entering.append("rect"), i, true))
+                    }
+
+                    function drawBars(selection, index, listen){
+                        if (listen){
+                            selection = selection
+                                          .on("click", function(d) {
+                                                  baseline = index;
+                                                  update();
+                                              })
+                        }
+
                         if (index == baseline){
-                            entering.append("rect")
+                            return selection
                                .attr("x", function(d) {
                                     return benchmark(d[0]) + index*bar_width;
                                })
@@ -82,7 +95,7 @@
                                .attr("fill", "white")
 
                         }else{
-                            entering.append("rect")
+                            return selection
                                .attr("x", function(d) {
                                     var offset = index > baseline ? index-1 : index;
                                     return benchmark(d[0]) + offset*bar_width;
@@ -97,18 +110,18 @@
                                     return Math.abs(time(+(d[1][index]) / +(d[1][baseline])) - timeOf1);
                                })
                                .attr("fill", colors[index])
-                               .on("click", function(d, i) { baseline = index; update();});
                             }
 
                     }
+
+                    legend();
+
                     function update(){
-                        svg.selectAll("rect").remove();
-                        for(var i = 0; i < series.length; i++){
-                             drawBars(i);
+                        for(var i = 0; i < bars.length; i++){
+                            drawBars(bars[i].transition().duration(1000), i);
                         }
                         legend();
                     }
-                    update();
 
                     plot.append("g")
                        .attr("class", "axis xaxis")
@@ -156,7 +169,6 @@
                                 })
                             .text(function(d){ return d.split('_').join(' '); })
                     }
-
 
                 });
 
