@@ -1,4 +1,4 @@
-{"methods":["Intel_Scalar","GHC","GHC_LLVM","Intel_SIMD"],
+{"series":["Intel_Scalar","GHC","GHC_LLVM","Intel_SIMD"],
  "benchmarks":[
     ["Matrix_Multiply", [1.0,3.103658537,1.024390244,0.643292683]],
     ["NBody", [1.0,2.785547909,1.041362273,0.227633669]],
