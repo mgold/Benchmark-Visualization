@@ -21,8 +21,6 @@
 	<body>
 		<script type="text/javascript">
 
-            function arrays_equal(a,b) { return !(a<b || b<a); }
-			
 			var w = 800;
 			var h = 400;
             var axis_h = 20;
@@ -43,16 +41,17 @@
             var plot = svg.append("g")
                         .attr("transform", "translate("+String(axis_w)+","+String(headroom)+")")
 
-            var baseline = 0;
-
             d3.json("data.json", function(err, parsed) {
                     var methods = parsed.methods;
                     var benchmarks = parsed.benchmarks;
                     benchmark.domain(benchmarks.map(function (a) { return a[0]; }));
                     benchmark.rangeRoundBands([0,w],0.3,0.1)
-                    time.domain([0.1, 10]) // TODO make more general
                     var bar_width = benchmark.rangeBand() / 3;
 
+                    time.domain([0.1, 10]); // Make more general or data=dependent?
+                    var timeOf1 = time(1);
+
+                    var baseline = 0;
                     var entering = plot.selectAll("rect")
                                     .data(benchmarks)
                                     .enter()
@@ -65,11 +64,11 @@
                            .attr("y", function(d) {
                                 var val = +(d[1][index])
                                 if (val > 1) { return time(val); }
-                                return time(1);
+                                return timeOf1;
                            })
                            .attr("width", bar_width)
                            .attr("height", function(d){
-                                return Math.abs(time(+(d[1][index])) - time(1));
+                                return Math.abs(time(+(d[1][index])) - timeOf1);
                            })
                            .attr("fill", color);
                     }
