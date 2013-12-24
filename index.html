@@ -65,6 +65,7 @@
                     var timeOf1 = time(1);
 
                     var baseline = 0;
+
                     var entering = plot.selectAll("rect")
                                     .data(benchmarks)
                                     .enter()
@@ -87,22 +88,27 @@
                                     return benchmark(d[0]) + offset*bar_width;
                                })
                                .attr("y", function(d) {
-                                    var val = +(d[1][index])
+                                    var val = +(d[1][index]) / +(d[1][baseline])
                                     if (val > 1) { return time(val); }
                                     return timeOf1;
                                })
                                .attr("width", bar_width)
                                .attr("height", function(d){
-                                    return Math.abs(time(+(d[1][index])) - timeOf1);
+                                    return Math.abs(time(+(d[1][index]) / +(d[1][baseline])) - timeOf1);
                                })
                                .attr("fill", colors[index])
-                               .on("click", function(d, i) { /*svg.selectAll("rect").remove()*/ });
+                               .on("click", function(d, i) { baseline = index; update();});
                             }
 
                     }
-                    for(var i = 0; i < series.length; i++){
-                         drawBars(i);
+                    function update(){
+                        svg.selectAll("rect").remove();
+                        for(var i = 0; i < series.length; i++){
+                             drawBars(i);
+                        }
+                        legend();
                     }
+                    update();
 
                     plot.append("g")
                        .attr("class", "axis xaxis")
@@ -130,23 +136,26 @@
                        .style("font-size", "12px")
                        .text("Speed-Up Factor Over Baseline");
 
-                    footer.selectAll("text")
-                        .data(series)
-                        .enter()
-                        .append("text")
-                        .attr("fill", function(d, i){
-                            if (baseline == i) {return "black";}
-                            return colors[i];
-                            })
-                        .attr("text-anchor", "middle")
-                        .attr("transform", function(d,i){
-                                return "translate("+String(axis_w + ((i+1)*w/6))+",15)";
-                            })
-                        .style("font-family", "sans-serif")
-                        .style("font-weight", function(d, i){
-                            return baseline == i ? "bold" : "normal"
-                            })
-                        .text(function(d){ return d.split('_').join(' '); })
+                    function legend(){
+                        footer.selectAll("text").remove();
+                        footer.selectAll("text")
+                            .data(series)
+                            .enter()
+                            .append("text")
+                            .attr("fill", function(d, i){
+                                if (baseline == i) {return "black";}
+                                return colors[i];
+                                })
+                            .attr("text-anchor", "middle")
+                            .attr("transform", function(d,i){
+                                    return "translate("+String(axis_w + ((i+1)*w/6))+",15)";
+                                })
+                            .style("font-family", "sans-serif")
+                            .style("font-weight", function(d, i){
+                                return baseline == i ? "bold" : "normal"
+                                })
+                            .text(function(d){ return d.split('_').join(' '); })
+                    }
 
 
                 });
