@@ -12,10 +12,20 @@
                     shape-rendering: crispEdges;
             }
 
+            .label text {
+                    font-family: sans-serif;
+                    font-size: 12px;
+            }
             .axis text {
                     font-family: sans-serif;
+                    font-size: 10px;
+            }
+
+            .xaxis text {
+                    font-weight: bold;
                     font-size: 11px;
             }
+
 		</style>
 	</head>
 	<body>
@@ -23,9 +33,9 @@
 
 			var w = 800;
 			var h = 400;
-            var axis_h = 20;
             var axis_w = 40;
             var headroom = 10;
+            var footroom = 40;
 
             //benchmark = set of bars
             //method = one bar in each set
@@ -37,10 +47,13 @@
 			var svg = d3.select("body")
 						.append("svg")
 						.attr("width", w+axis_w)
-						.attr("height", h+axis_h+headroom);
+						.attr("height", h+headroom+footroom);
             var plot = svg.append("g")
                         .attr("transform", "translate("+String(axis_w)+","+String(headroom)+")")
+            var footer = svg.append("g")
+                        .attr("transform", "translate("+String(axis_w)+","+String(headroom+h)+")")
 
+            var colors = ["red", "green", "blue", "#E0B0FF"]
             d3.json("data.json", function(err, parsed) {
                     var methods = parsed.methods;
                     var benchmarks = parsed.benchmarks;
@@ -48,7 +61,7 @@
                     benchmark.rangeRoundBands([0,w],0.3,0.1)
                     var bar_width = benchmark.rangeBand() / 3;
 
-                    time.domain([0.1, 10]); // Make more general or data=dependent?
+                    time.domain([0.1, 10]); // Make more general or data-dependent?
                     var timeOf1 = time(1);
 
                     var baseline = 0;
@@ -56,7 +69,7 @@
                                     .data(benchmarks)
                                     .enter()
 
-                    function drawBars(index, color){
+                    function drawBars(index){
                         entering.append("rect")
                            .attr("x", function(d) {
                                 return benchmark(d[0]) + (index-1)*bar_width;
@@ -70,16 +83,15 @@
                            .attr("height", function(d){
                                 return Math.abs(time(+(d[1][index])) - timeOf1);
                            })
-                           .attr("fill", color);
+                           .attr("fill", colors[index]);
                     }
-                    // index 0 is initial baseline
-                    drawBars(1, "green");
-                    drawBars(2, "blue");
-                    drawBars(3, "purple");
+                    for(var i = 0; i < 4; i++){
+                        if(i != baseline){ drawBars(i); }
+                    }
 
                     plot.append("g")
-                       .attr("class", "axis")
-                       .attr("transform", "translate(0," + h + ")")
+                       .attr("class", "axis xaxis")
+                       .attr("transform", "translate(0," + timeOf1 + ")")
                        .call(d3.svg.axis().scale(benchmark))
 
                     //Remove underscores
@@ -94,6 +106,32 @@
                                .orient("left")
                                .tickFormat(d3.format(".1f"))
                             )
+                    svg.append("text")
+                       .attr("class", "label")
+                       .attr("text-anchor", "middle")
+                       .attr("transform", "translate(10,"+(timeOf1+headroom)+"), rotate(-90)")
+                       //class isn't working?
+                       .style("font-family", "sans-serif")
+                       .style("font-size", "12px")
+                       .text("Speed-Up Factor Over Baseline");
+
+                    footer.selectAll("text")
+                        .data(methods)
+                        .enter()
+                        .append("text")
+                        .attr("fill", function(d, i){
+                            if (baseline == i) {return "black";}
+                            return colors[i];
+                            })
+                        .attr("text-anchor", "middle")
+                        .attr("transform", function(d,i){
+                                return "translate("+String(axis_w + ((i+1)*w/6))+",15)";
+                            })
+                        .style("font-family", "sans-serif")
+                        .style("font-weight", function(d, i){
+                            return baseline == i ? "bold" : "normal"
+                            })
+                        .text(function(d){ return d.split('_').join(' '); })
 
 
                 });
