@@ -57,46 +57,26 @@
                                     .data(benchmarks)
                                     .enter()
 
-                    entering.append("rect")
-                       .attr("x", function(d) {
-                            return benchmark(d[0]);
-                       })
-                       .attr("y", function(d) {
-                            return time(+(d[1][1]))
-                       })
-                       .attr("width", bar_width)
-                       .attr("height", function(d){
-                            return h - time(+(d[1][1]))
-                       })
-                       .attr("fill", "green");
-
-
-                    entering.append("rect")
-                       .attr("x", function(d) {
-                            return benchmark(d[0]) + bar_width;
-                       })
-                       .attr("y", function(d) {
-                            return time(+(d[1][2]))
-                       })
-                       .attr("width", bar_width)
-                       .attr("height", function(d){
-                            return h - time(+(d[1][2]))
-                       })
-                       .attr("fill", "blue");
-
-
-                    entering.append("rect")
-                       .attr("x", function(d) {
-                            return benchmark(d[0]) + 2*bar_width;
-                       })
-                       .attr("y", function(d) {
-                            return time(+(d[1][3]))
-                       })
-                       .attr("width", bar_width)
-                       .attr("height", function(d){
-                            return h - time(+(d[1][3]))
-                       })
-                       .attr("fill", "purple");
+                    function drawBars(index, color){
+                        entering.append("rect")
+                           .attr("x", function(d) {
+                                return benchmark(d[0]) + (index-1)*bar_width;
+                           })
+                           .attr("y", function(d) {
+                                var val = +(d[1][index])
+                                if (val > 1) { return time(val); }
+                                return time(1);
+                           })
+                           .attr("width", bar_width)
+                           .attr("height", function(d){
+                                return Math.abs(time(+(d[1][index])) - time(1));
+                           })
+                           .attr("fill", color);
+                    }
+                    // index 0 is initial baseline
+                    drawBars(1, "green");
+                    drawBars(2, "blue");
+                    drawBars(3, "purple");
 
                     plot.append("g")
                        .attr("class", "axis")
