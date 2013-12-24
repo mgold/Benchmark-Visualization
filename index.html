@@ -27,8 +27,7 @@
 			var h = 400;
             var axis_h = 20;
             var axis_w = 20;
-			var intrabar_padding = 0;
-            var interbar_padding = 3;
+            var headroom = 10;
 
             //benchmark = set of bars
             //method = one bar in each set
@@ -40,9 +39,9 @@
 			var svg = d3.select("body")
 						.append("svg")
 						.attr("width", w+axis_w)
-						.attr("height", h+axis_h);
+						.attr("height", h+axis_h+headroom);
             var plot = svg.append("g")
-                        .attr("transform", "translate("+String(axis_w)+",0)")
+                        .attr("transform", "translate("+String(axis_w)+","+String(headroom)+")")
 
             var baseline = 0;
 
@@ -109,6 +108,12 @@
                     //Remove underscores
                     plot.selectAll("text")
                         .text(function(d){ return d.split('_').join(' '); })
+
+                    svg.append("g")
+                       .attr("class", "axis")
+                       .attr("transform", "translate("+String(axis_w)+","+String(headroom)+")")
+                       .call(d3.svg.axis().scale(time).orient("left"))
+
 
                 });
 
