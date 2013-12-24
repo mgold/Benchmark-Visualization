@@ -26,14 +26,14 @@
 			var w = 800;
 			var h = 400;
             var axis_h = 20;
-            var axis_w = 20;
+            var axis_w = 40;
             var headroom = 10;
 
             //benchmark = set of bars
             //method = one bar in each set
             //time = y axis (normalized)
             var benchmark = d3.scale.ordinal()
-            var time = d3.scale.linear()
+            var time = d3.scale.log()
                         .range([h, 0])
 
 			var svg = d3.select("body")
@@ -50,7 +50,7 @@
                     var benchmarks = parsed.benchmarks;
                     benchmark.domain(benchmarks.map(function (a) { return a[0]; }));
                     benchmark.rangeRoundBands([0,w],0.3,0.1)
-                    time.domain([0, 10]) // TODO make more general
+                    time.domain([0.1, 10]) // TODO make more general
                     var bar_width = benchmark.rangeBand() / 3;
 
                     var entering = plot.selectAll("rect")
@@ -59,8 +59,6 @@
 
                     entering.append("rect")
                        .attr("x", function(d) {
-                            console.log(d[0])
-                            console.log(benchmark(d[0]));
                             return benchmark(d[0]);
                        })
                        .attr("y", function(d) {
@@ -112,7 +110,11 @@
                     svg.append("g")
                        .attr("class", "axis")
                        .attr("transform", "translate("+String(axis_w)+","+String(headroom)+")")
-                       .call(d3.svg.axis().scale(time).orient("left"))
+                       .call(d3.svg.axis()
+                               .scale(time)
+                               .orient("left")
+                               .tickFormat(d3.format(".1f"))
+                            )
 
 
                 });
