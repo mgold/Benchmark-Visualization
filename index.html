@@ -12,7 +12,7 @@
                     shape-rendering: crispEdges;
             }
 
-            .label text {
+            .label tspan {
                     font-family: sans-serif;
                     font-size: 12px;
             }
@@ -137,7 +137,6 @@
                        .attr("transform", "translate(0," + timeOf1 + ")")
                        .call(d3.svg.axis().scale(benchmark))
 
-                    //Remove underscores
                     plot.selectAll("text")
                         .text(function(d){ return remove_underscores(d); })
 
@@ -150,23 +149,18 @@
                                .tickFormat(d3.format(".1f"))
                             )
 
-                    var label = svg.append("g")
+                    var series_label = svg.append("text")
+                       .attr("transform", "translate(10,"+(timeOf1+headroom+100)+"), rotate(-90)")
+                       .attr("text-anchor", "left")
                        .attr("class", "label")
-                       .attr("anchor", "middle")
-                       .attr("transform", "translate(10,"+(timeOf1+headroom)+"), rotate(-90)")
-
-                    label.append("text")
-                       .attr("text-anchor", "end")
-                       .text("Execution Time Relative to ");
-
-                    var series_label = label.append("text")
-                       .attr("text-anchor", "start")
-                       .attr("transform", "translate(6,0)")
-                       .style("font-weight", "bold") // the reason why this is so complicated
+                     .append("tspan")
+                       .text("Execution Time Relative to ")
+                     .append("tspan")
+                       .style("font-weight", "bold")
+                       .attr("fill", colors(baseline))
                        .text(remove_underscores(series[baseline]));
 
                     function legend(){
-
                         footer.selectAll("text").remove();
                         footer.selectAll("text")
                             .data(series)
