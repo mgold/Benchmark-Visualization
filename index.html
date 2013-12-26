@@ -36,15 +36,18 @@
 			var w = 800;
 			var h = 400;
             var axis_w = 40;
-            var headroom = 10;
-            var footroom = 40;
+            var headroom = 30;
+            var footroom = 30;
 
             //benchmark = set of bars
-            //series = one bar in each set
+            //series = one bar in each set, color-coded
             //time = y axis (normalized)
             var benchmark = d3.scale.ordinal()
             var time = d3.scale.log()
                         .range([h, 0])
+            var colors = d3.scale.category10()
+                        .domain([0, 9])
+
 
 			var svg = d3.select("body")
 						.append("svg")
@@ -52,11 +55,7 @@
 						.attr("height", h+headroom+footroom);
             var plot = svg.append("g")
                         .attr("transform", "translate("+String(axis_w)+","+String(headroom)+")")
-            var footer = svg.append("g")
-                        .attr("transform", "translate("+String(axis_w)+","+String(headroom+h)+")")
 
-            var colors = d3.scale.category10()
-                        .domain([0, 9])
             d3.json("data.json", function(err, parsed) {
                     var series = parsed.series;
                     var benchmarks = parsed.benchmarks;
@@ -117,42 +116,39 @@
 
                     }
 
-                    function drawLabels (){
-                        var baseX = benchmark(benchmark.domain()[0])
-                        var a = benchmarks[0][1];
-                        plot.selectAll(".sLabel")
-                            .data(series)
-                            .enter()
-                            .append("text")
-                            .attr("class", "label sLabel")
-                            .attr("text-anchor", "middle")
-                            .attr("fill", function (d,i) {return colors(i)})
-                            .attr("transform", function (d,i){
-                                    var x = baseX + bar_width * (i < baseline ? i + 0.5 : i - 0.5)
-                                    var y = +(a[i]) / +(a[baseline])
-                                    y = (y > 1) ? time(y) - 2 : time(y) + 12
-                                    return "translate("+x+","+y+")"
-                                })
-                            .text(remove_underscores)
-                            .filter(function (d, i) { return i == baseline })
-                            .remove();
-                    }
-
-                    drawLabels();
+                    //plot.on("mousemove", legend);
+                    var legendText = svg.append("text");
                     legend();
 
+                    function legend (){
+                        var mPos = [30, 0] //d3.mouse(this);
+                        legendText.selectAll("tspan").remove();
+                        legendText.attr("transform", function (){
+                                          var x = mPos[0] + axis_w
+                                          var y = mPos[1] > timeOf1 ? headroom+h+footroom : headroom
+                                          return "translate("+x+","+y+")"
+                                      })
+                                  .attr("class", "label")
+                            .selectAll("tspan")
+                            .data(series)
+                            .enter()
+                            .append("tspan")
+                            .attr("fill", function(d, i){ return colors(i); })
+                            .text(function(d){return remove_underscores(d)+" "})
+                            .filter(function(d, i){ return baseline == i })
+                            .remove()
+                    }
+
                     function update(){
-                        plot.selectAll(".sLabel").remove();
-                        series_label.transition()
+                        axis_label.transition()
                                     .duration(0)
                                     .delay(750)
                                     .attr("fill", colors(baseline))
                                     .text(remove_underscores(series[baseline]))
-                                    .each("end", drawLabels);
+                                    .each("end", legend)
                         for(var i = 0; i < bars.length; i++){
                             drawBars(bars[i].transition().duration(1000), i);
                         }
-                        legend();
 
                     }
 
@@ -173,7 +169,7 @@
                                .tickFormat(d3.format(".1f"))
                             )
 
-                    var series_label = svg.append("text")
+                    var axis_label = svg.append("text")
                        .attr("transform", "translate(10,"+(timeOf1+headroom+100)+"), rotate(-90)")
                        .attr("text-anchor", "left")
                        .attr("class", "label")
@@ -183,27 +179,6 @@
                        .style("font-weight", "bold")
                        .attr("fill", colors(baseline))
                        .text(remove_underscores(series[baseline]));
-
-                    function legend(){
-                        footer.selectAll("text").remove();
-                        footer.selectAll("text")
-                            .data(series)
-                            .enter()
-                            .append("text")
-                            .attr("fill", function(d, i){
-                                if (baseline == i) {return "black";}
-                                return colors(i);
-                                })
-                            .attr("text-anchor", "middle")
-                            .attr("transform", function(d,i){
-                                    return "translate("+String(axis_w + ((i+1)*w/6))+",15)";
-                                })
-                            .style("font-family", "sans-serif")
-                            .style("font-weight", function(d, i){
-                                return baseline == i ? "bold" : "normal"
-                                })
-                            .text(remove_underscores)
-                    }
 
                 });
 
