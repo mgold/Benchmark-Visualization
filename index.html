@@ -70,6 +70,9 @@
                     benchmark.domain(benchmarks.map(function (a) { return a[0]; }));
                     benchmark.rangeRoundBands([0,w],0.3,0.1)
                     var bar_width = benchmark.rangeBand() / (series.length - 1);
+                    var legend_snap = d3.scale.quantize()
+                                        .domain([0,w])
+                                        .range(benchmark.range())
 
                     time.domain([0.1, 10]); // Make more general or data-dependent?
                     var timeOf1 = time(1);
@@ -124,15 +127,15 @@
 
                     }
 
+                    var legendText = svg.append("text").attr("text-anchor", "middle")
                     plot.on("mousemove", function(){legend(d3.mouse(this))});
-                    var legendText = svg.append("text");
+                    plot.on("mouseout", function(){legend([0,0])})
                     legend([0,0]);
-
                     function legend (mPos){
                         if (mPos == undefined) return;
                         legendText.selectAll("tspan").remove();
                         legendText.attr("transform", function (){
-                                          var x = mPos[0]
+                                          var x = legend_snap(mPos[0]) + 2.5*bar_width
                                           var y = mPos[1] > timeOf1 ? headroom+h+footroom/2 : headroom/2
                                           return "translate("+x+","+y+")"
                                       })
