@@ -12,7 +12,7 @@
                     shape-rendering: crispEdges;
             }
 
-            .label tspan {
+            .label {
                     font-family: sans-serif;
                     font-size: 12px;
             }
@@ -117,14 +117,38 @@
 
                     }
 
+                    function drawLabels (){
+                        var baseX = benchmark(benchmark.domain()[0])
+                        var a = benchmarks[0][1];
+                        plot.selectAll(".sLabel")
+                            .data(series)
+                            .enter()
+                            .append("text")
+                            .attr("class", "label sLabel")
+                            .attr("text-anchor", "middle")
+                            .attr("fill", function (d,i) {return colors(i)})
+                            .attr("transform", function (d,i){
+                                    var x = baseX + bar_width * (i < baseline ? i + 0.5 : i - 0.5)
+                                    var y = +(a[i]) / +(a[baseline])
+                                    y = (y > 1) ? time(y) - 2 : time(y) + 12
+                                    return "translate("+x+","+y+")"
+                                })
+                            .text(remove_underscores)
+                            .filter(function (d, i) { return i == baseline })
+                            .remove();
+                    }
+
+                    drawLabels();
                     legend();
 
                     function update(){
+                        plot.selectAll(".sLabel").remove();
                         series_label.transition()
                                     .duration(0)
                                     .delay(750)
                                     .attr("fill", colors(baseline))
-                                    .text(remove_underscores(series[baseline]));
+                                    .text(remove_underscores(series[baseline]))
+                                    .each("end", drawLabels);
                         for(var i = 0; i < bars.length; i++){
                             drawBars(bars[i].transition().duration(1000), i);
                         }
@@ -137,7 +161,7 @@
                        .attr("transform", "translate(0," + timeOf1 + ")")
                        .call(d3.svg.axis().scale(benchmark))
 
-                    plot.selectAll("text")
+                    plot.selectAll(".xaxis text")
                         .text(remove_underscores)
 
                     svg.append("g")
