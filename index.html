@@ -148,6 +148,13 @@
                             .text(function(d){return remove_underscores(d)+" "})
                             .filter(function(d, i){ return baseline == i })
                             .remove()
+
+                        legendText.selectAll("tspan")
+                            .append("tspan")
+                            .attr("fill", "black")
+                            .text("| ")
+                            .filter(function(d, i){ return i > series.length -3})
+                            .remove()
                     }
 
                     function update(){
