@@ -131,7 +131,7 @@
                     var legendText = svg.append("text").attr("text-anchor", "middle").attr("class", "label")
                     var old_mPos = [0,0];
                     plot.on("mousemove", function(){legend(d3.mouse(this))})
-                    plot.on("mouseout", legend);
+                    plot.on("mouseout", function(){legend([0,0])});
                     legend();
                     function legend (mPos){
                         if (mPos == undefined) {
