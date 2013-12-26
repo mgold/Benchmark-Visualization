@@ -1,0 +1,68 @@
+I was a witness to a crime against data visualization. The scene: ICFP'13, the
+International Conference on Functional Programming, one of ACM SIGPLAN's major
+conferences. 
+
+One of the sessions focused on SIMD computations, and the efficiencies
+they were able to gain by exploiting data parallelism. Most of the talks
+went over my head. But then the presented showed this graphic:
+
+
+What stands out about this image? The large bars in the middle of the
+chart. But the y-axis is program run time, and like golf, smaller
+numbers are better. The authors' data is the third, dark bar in each
+group. Notice that the value of each bar is less than one, meaning it
+took less time than the baseline, which are implicit bars of height one.
+The authors' goal was to push these bars closer to zero, away from one.
+The graphic they chose encoded their results as *negative space*. (The
+complete lack of a caption doesn't help either.)
+
+But this was not an isolated incident. The *very next presentation* was
+even worse:
+
+No longer is the baseline value implicit: twenty-four blue bars all of
+height one, despite this information being present in the caption. They
+certainly don't help the overcrowding that makes it difficult to trace
+one data series over the x-axis, which (one observes) is numeric rather
+than categorical as above. Other than the extraneous blue bars, nothing
+indicates that one and not zero is the baseline. Visually, all the bars
+are stroked in black, adding vertical striations and making the colors
+less distinct and harder to indentify. Finally, serif and sans-serif
+fonts are mixed. ("SSE" relates domain knowledge, and in context will
+not be mistaken for sum of the square error.)
+
+On the next page of the academic paper, we're given the following plot. Finally the authors have made an attempt to signify the importance of one, by adding a horiztonal line that is still drowned out by blue emanating from zero. Additionally, we've transitioned from execution time to speedup factor, so larger is now faster. This plot uses categorical benchmarks like the first paper's, although there is only one other dataset.
+
+And finally, we return to the first style with this figure. I am unsure why both 31 and 32 warranted inclusion on the x-axis; it disturbs the spacing. The error bars are only significant in one case, and are barely visible. If they cannot be omitted, the end of the bar can be tapered starting at the low value and peaking at the high value.
+
+These atrocious visualizations render the results completely inscrutable.
+(Granted, no one at ICFP understands more than a third of the talks
+anyway, but that's no excuse.) This is a failure among world-class
+computer professionals to obtain basic literacy in data visualization.
+This is the standard in our field, and it's appalling.
+
+I've done visualizations that needed to be designed from the ground up,
+and this dataset did not require that kind of attention. The solution
+is by no means novel: use a logarithmic scale. 
+
+Just as on a linear chart +3 and -3 are the same distance away from
+0 in opposite directions, on a logarithmic chart, x3 and x1/3 are
+the same distance away from 1 in opposite directions. Algebraically,
+linear scales provide equal space for additive inverses straddled by
+the additive identity; logarithmic scales provide equal space for
+multiplicative inverses straddled by the multiplicative identity.
+Furthermore, the vertical distance from 1 to 3 is the same as that
+from 3 to 9, as both represent factors of three; this is also true in
+general. Speedup over a baseline is inherently multiplicative, and
+therefore should use a logarithmic scale. With a linear scale, the
+distances are highly distorted:
+
+
+The lack of a logarithmic scale is certainly the largest error committed
+by the chartmakers, but in crafting a replacement I sought to attend to
+every detail. The result is made for the browser, not the printed page,
+and is therefore both larger and interactive. Click on any of the bars
+to change the baseline against which the data are compared.
+
+These data are from the first paper, and were included with the figure.
+I've asked the authors of the second paper for their data and have not
+heard back.
