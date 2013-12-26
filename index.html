@@ -38,6 +38,7 @@
             var axis_w = 40;
             var headroom = 30;
             var footroom = 30;
+            var rightroom = 30;
 
             //benchmark = set of bars
             //series = one bar in each set, color-coded
@@ -51,8 +52,8 @@
 
 			var svg = d3.select("body")
 						.append("svg")
-						.attr("width", w+axis_w)
-						.attr("height", h+headroom+footroom);
+						.attr("width", axis_w+w+rightroom)
+						.attr("height", headroom+h+footroom);
             var plot = svg.append("g")
                         .attr("transform", "translate("+String(axis_w)+","+String(headroom)+")")
 
@@ -127,7 +128,7 @@
 
                     }
 
-                    var legendText = svg.append("text").attr("text-anchor", "middle")
+                    var legendText = svg.append("text").attr("text-anchor", "middle").attr("class", "label")
                     var old_mPos = [0,0];
                     plot.on("mousemove", function(){legend(d3.mouse(this))})
                     plot.on("mouseout", legend);
@@ -139,13 +140,7 @@
                             old_mPos = mPos;
                         }
                         legendText.selectAll("tspan").remove();
-                        legendText.attr("transform", function (){
-                                          var x = legend_snap(mPos[0]) + 2.5*bar_width
-                                          var y = mPos[1] > timeOf1 ? headroom+h+footroom/2 : headroom/2
-                                          return "translate("+x+","+y+")"
-                                      })
-                                  .attr("class", "label")
-                            .selectAll("tspan")
+                        legendText.selectAll("tspan")
                             .data(series)
                             .enter()
                             .append("tspan")
@@ -160,6 +155,14 @@
                             .text("| ")
                             .filter(function(d, i){ return i > series.length -3})
                             .remove()
+
+                        legendText.attr("transform", function (){
+                                      var half_width = this.getBBox().width / 2;
+                                      var x = legend_snap(mPos[0]) + 2.9*bar_width;
+                                      x = Math.max(half_width, Math.min(w-half_width/3.5, x))
+                                      var y = mPos[1] > timeOf1 ? headroom+h+footroom : headroom/3;
+                                      return "translate("+x+","+y+")"
+                                  })
                     }
 
                     function update(){
