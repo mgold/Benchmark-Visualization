@@ -56,6 +56,14 @@
             var plot = svg.append("g")
                         .attr("transform", "translate("+String(axis_w)+","+String(headroom)+")")
 
+            //Without this, mousemove events are erratic
+            plot.append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", w)
+                .attr("height", h)
+                .attr("fill", "white")
+
             d3.json("data.json", function(err, parsed) {
                     var series = parsed.series;
                     var benchmarks = parsed.benchmarks;
@@ -69,12 +77,12 @@
                     var baseline = 0;
                     var bars = [];
 
-                    var entering = plot.selectAll("rect")
+                    var entering = plot.selectAll(".bar")
                                     .data(benchmarks)
                                     .enter()
 
                     for(var i = 0; i < series.length; i++){
-                        bars.push(drawBars(entering.append("rect"), i, true))
+                        bars.push(drawBars(entering.append("rect").attr("class", "bar"), i, true))
                     }
 
                     function drawBars(selection, index, listen){
@@ -116,16 +124,16 @@
 
                     }
 
-                    //plot.on("mousemove", legend);
+                    plot.on("mousemove", function(){legend(d3.mouse(this))});
                     var legendText = svg.append("text");
-                    legend();
+                    legend([0,0]);
 
-                    function legend (){
-                        var mPos = [30, 0] //d3.mouse(this);
+                    function legend (mPos){
+                        if (mPos == undefined) return;
                         legendText.selectAll("tspan").remove();
                         legendText.attr("transform", function (){
-                                          var x = mPos[0] + axis_w
-                                          var y = mPos[1] > timeOf1 ? headroom+h+footroom : headroom
+                                          var x = mPos[0]
+                                          var y = mPos[1] > timeOf1 ? headroom+h+footroom/2 : headroom/2
                                           return "translate("+x+","+y+")"
                                       })
                                   .attr("class", "label")
