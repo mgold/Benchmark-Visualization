@@ -128,11 +128,16 @@
                     }
 
                     var legendText = svg.append("text").attr("text-anchor", "middle")
-                    plot.on("mousemove", function(){legend(d3.mouse(this))});
-                    plot.on("mouseout", function(){legend([0,0])})
-                    legend([0,0]);
+                    var old_mPos = [0,0];
+                    plot.on("mousemove", function(){legend(d3.mouse(this))})
+                    plot.on("mouseout", legend);
+                    legend();
                     function legend (mPos){
-                        if (mPos == undefined) return;
+                        if (mPos == undefined) {
+                            mPos = old_mPos;
+                        }else{
+                            old_mPos = mPos;
+                        }
                         legendText.selectAll("tspan").remove();
                         legendText.attr("transform", function (){
                                           var x = legend_snap(mPos[0]) + 2.5*bar_width
