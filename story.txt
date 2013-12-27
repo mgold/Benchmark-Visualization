@@ -1,10 +1,12 @@
-I was a witness to a crime against data visualization. The scene: ICFP'13, the
-International Conference on Functional Programming, one of ACM SIGPLAN's major
-conferences. 
-
-One of the sessions focused on SIMD computations, and the efficiencies
-they were able to gain by exploiting data parallelism. Most of the talks
-went over my head. But then the presented showed this graphic:
+I was a witness to a crime against data visualization. The scene:
+ICFP'13, the International Conference on Functional Programming, one
+of ACM SIGPLAN's major conferences. One of the sessions focused on
+SIMD computations, and the efficiencies they were able to gain by
+exploiting data parallelism. Most of the talks went over my head, but
+the key point is that the topic lends itself to program performance on
+benchmarks. That is, how much faster can a task be completed using the
+new techniques compared to before? This is the kind of data shown by
+this graphic, from the first presentation in the session:
 
 
 What stands out about this image? The large bars in the middle of the
@@ -19,6 +21,7 @@ complete lack of a caption doesn't help either.)
 But this was not an isolated incident. The *very next presentation* was
 even worse:
 
+
 No longer is the baseline value implicit: twenty-four blue bars all of
 height one, despite this information being present in the caption. They
 certainly don't help the overcrowding that makes it difficult to trace
@@ -26,13 +29,23 @@ one data series over the x-axis, which (one observes) is numeric rather
 than categorical as above. Other than the extraneous blue bars, nothing
 indicates that one and not zero is the baseline. Visually, all the bars
 are stroked in black, adding vertical striations and making the colors
-less distinct and harder to indentify. Finally, serif and sans-serif
+less distinct and harder to identify. Finally, serif and sans-serif
 fonts are mixed. ("SSE" relates domain knowledge, and in context will
 not be mistaken for sum of the square error.)
 
-On the next page of the academic paper, we're given the following plot. Finally the authors have made an attempt to signify the importance of one, by adding a horiztonal line that is still drowned out by blue emanating from zero. Additionally, we've transitioned from execution time to speedup factor, so larger is now faster. This plot uses categorical benchmarks like the first paper's, although there is only one other dataset.
+On the next page of the academic paper, we're given the following plot.
+Finally the authors have made an attempt to signify the importance of
+one, by adding a horizontal line that is still drowned out by blue
+emanating from zero. Additionally, we've switched from execution time to
+speedup factor, so larger bars are now faster programs. This plot uses
+categorical benchmarks like the first paper's, although there is only
+one dataset besides the baseline.
 
-And finally, we return to the first style with this figure. I am unsure why both 31 and 32 warranted inclusion on the x-axis; it disturbs the spacing. The error bars are only significant in one case, and are barely visible. If they cannot be omitted, the end of the bar can be tapered starting at the low value and peaking at the high value.
+And finally, we return to the first style with this figure. I am unsure
+why both 31 and 32 warranted inclusion on the x-axis; it disturbs the
+spacing. The error bars are only significant in one case, and are barely
+visible. If they cannot be omitted, the end of the bar can be tapered
+starting at the low value and peaking at the high value.
 
 These atrocious visualizations render the results completely inscrutable.
 (Granted, no one at ICFP understands more than a third of the talks
@@ -44,25 +57,59 @@ I've done visualizations that needed to be designed from the ground up,
 and this dataset did not require that kind of attention. The solution
 is by no means novel: use a logarithmic scale. 
 
-Just as on a linear chart +3 and -3 are the same distance away from
-0 in opposite directions, on a logarithmic chart, x3 and x1/3 are
-the same distance away from 1 in opposite directions. Algebraically,
-linear scales provide equal space for additive inverses straddled by
-the additive identity; logarithmic scales provide equal space for
-multiplicative inverses straddled by the multiplicative identity.
-Furthermore, the vertical distance from 1 to 3 is the same as that
-from 3 to 9, as both represent factors of three; this is also true in
-general. Speedup over a baseline is inherently multiplicative, and
-therefore should use a logarithmic scale. With a linear scale, the
-distances are highly distorted:
+Just as on a linear chart +3 and -3 are the same distance away
+from 0 in opposite directions, on a logarithmic chart, x3 and
+x1/3 are the same distance away from 1 in opposite directions.
+Algebraically, linear scales separate additive inverses with the
+additive identity; logarithmic scales separate multiplicative inverses
+with the multiplicative identity. Furthermore, on a logarithmic scale
+the vertical distance from 1 to 3 is the same as that from 3 to 9, as
+both represent factors of three; this is also true in general. Speedup
+over a baseline is inherently multiplicative, and therefore should use
+a logarithmic scale. With a linear scale, the distances are highly
+distorted:
 
 
 The lack of a logarithmic scale is certainly the largest error committed
-by the chartmakers, but in crafting a replacement I sought to attend to
+by the chartmakers. Virtually all spreadsheet programs offer logarithmic
+scales; obtaining passable graphics is possible with some principled
+WYSIWYG editing. But in crafting a replacement I sought to attend to
 every detail. The result is made for the browser, not the printed page,
 and is therefore both larger and interactive. Click on any of the bars
 to change the baseline against which the data are compared.
 
-These data are from the first paper, and were included with the figure.
-I've asked the authors of the second paper for their data and have not
-heard back.
+
+After the baseline transitions, the other feature of this graph is
+the floating legend. Traditional legends are removed from the data,
+requiring the eye to move to the edge of the graph and back while
+remembering a color/string pair. Legends are invariably arranged
+vertically when the bars in a grouped bar chart are horizontal. This
+floating legend strikes a nice balance between instructions at point
+of need (Edward Tufte) and minimizing interaction (Bret Victor). In
+general, these are not conflicting ideas, but until eye trackers become
+standard, the mouse is the best proxy available for where the user is
+looking. However, even when the mouse is in the "wrong" place, the
+legend is still onscreen. The graphic is as useful as possible with no
+interaction, but minimal interaction is used to enhance the experience.
+
+https://twitter.com/EdwardTufte/status/414852398624935936
+http://worrydream.com/MagicInk/#interactivity_considered_harmful
+
+The data above are from the first paper, and were included with the
+figure. I've asked the authors of the second paper for their data and
+have not heard back. I manually lifted the values from the simplest
+of their figures, and they can be seen below. With only one dataset,
+changing the baseline merely switches between speedup ratio and time
+taken ratio. The floating legend has been removed in favor of an
+updating vertical axis label.
+
+
+As for the two multicolor bar charts, there is some hope for them as
+well. Notice that their data is numeric, rather than categorical. The
+third and final paper in that session at ICFP did a much better job
+presenting their speedup results. Firstly, a logarithmic scale is used.
+Second, line plots are effective because they reinforce the ordering of
+the data, and do so with minimal ink. Perhaps the various shapes used
+for the data points could be replaced by thin vertical lines, though
+colorblind readers will likely disagree unless the series are labeled
+directly.
