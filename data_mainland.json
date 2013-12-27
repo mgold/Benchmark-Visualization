@@ -1,0 +1,12 @@
+{"series":["Unmodified vector", "Modified vector"],
+ "benchmarks":[
+     ["sum", [1.0,1.98]],
+     ["kahan", [1.0,1.91]],
+     ["dotp", [1.0,1.94]],
+     ["saxpy", [1.0,3.22]],
+     ["rbf", [1.0,2.59]],
+     ["variance",[1.0,1.99]],
+     ["mixture",[1.0,1.05]],
+     ["quickhull",[1.0,1.13]]
+  ]
+}
