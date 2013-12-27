@@ -31,14 +31,14 @@
 	<body>
 		<script type="text/javascript">
 
-            var datafile = "data_petersen.json";
+            var datafile = "data_mainland.json";
 
-			var w = 800;
+			var w = 500;
 			var h = 400;
             var axis_w = 40;
-            var headroom = 30;
-            var footroom = 30;
-            var rightroom = 30;
+            var headroom = 10;
+            var footroom = 5;
+            var rightroom = 0;
 
             //benchmark = set of bars
             //series = one bar in each set, color-coded
@@ -77,7 +77,7 @@
                                         .domain([0,w])
                                         .range(benchmark.range())
 
-                    time.domain([0.1, 10]); // Make more general or data-dependent?
+                    time.domain([0.25, 4]); // Make more general or data-dependent?
                     var timeOf1 = time(1);
 
                     var baseline = 0;
