@@ -130,50 +130,12 @@
 
                     }
 
-                    var legendText = svg.append("text").attr("text-anchor", "middle").attr("class", "label")
-                    var old_mPos = [0,0];
-                    plot.on("mousemove", function(){legend(d3.mouse(this))})
-                    plot.on("mouseout", function(){legend([0,0])});
-                    legend();
-                    function legend (mPos){
-                        if (mPos == undefined) {
-                            mPos = old_mPos;
-                        }else{
-                            old_mPos = mPos;
-                        }
-                        legendText.selectAll("tspan").remove();
-                        legendText.selectAll("tspan")
-                            .data(series)
-                            .enter()
-                            .append("tspan")
-                            .attr("fill", function(d, i){ return colors(i); })
-                            .text(function(d){return remove_underscores(d)+" "})
-                            .filter(function(d, i){ return baseline == i })
-                            .remove()
-
-                        legendText.selectAll("tspan")
-                            .append("tspan")
-                            .attr("fill", "black")
-                            .text("| ")
-                            .filter(function(d, i){ return i > series.length -3})
-                            .remove()
-
-                        legendText.attr("transform", function (){
-                                      var half_width = this.getBBox().width / 2;
-                                      var x = legend_snap(mPos[0]) + 2.9*bar_width;
-                                      x = Math.max(half_width, Math.min(w-half_width/3.5, x))
-                                      var y = mPos[1] > timeOf1 ? headroom+h+footroom : headroom/3;
-                                      return "translate("+x+","+y+")"
-                                  })
-                    }
-
                     function update(){
                         axis_label.transition()
                                     .duration(0)
                                     .delay(750)
                                     .attr("fill", colors(baseline))
                                     .text(remove_underscores(series[baseline]))
-                                    .each("end", legend)
                         for(var i = 0; i < bars.length; i++){
                             drawBars(bars[i].transition().duration(1000), i);
                         }
