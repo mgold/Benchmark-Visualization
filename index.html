@@ -31,7 +31,7 @@
 	<body>
 		<script type="text/javascript">
 
-            function remove_underscores (s) {return s.split('_').join(' '); }
+            var datafile = "data_petersen.json";
 
 			var w = 800;
 			var h = 400;
@@ -65,7 +65,9 @@
                 .attr("height", h)
                 .attr("fill", "white")
 
-            d3.json("data.json", function(err, parsed) {
+            function remove_underscores (s) {return s.split('_').join(' '); }
+
+            d3.json(datafile, function(err, parsed) {
                     var series = parsed.series;
                     var benchmarks = parsed.benchmarks;
                     benchmark.domain(benchmarks.map(function (a) { return a[0]; }));
