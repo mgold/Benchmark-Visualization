@@ -31,6 +31,7 @@
 	<body>
 		<script type="text/javascript">
 
+            var bindTo = "body";
             var datafile = "data_mainland.json";
 
 			var w = 500;
@@ -50,7 +51,7 @@
                         .domain([0, 9])
 
 
-			var svg = d3.select("body")
+			var svg = d3.select(bindTo)
 						.append("svg")
 						.attr("width", axis_w+w+rightroom)
 						.attr("height", headroom+h+footroom);
