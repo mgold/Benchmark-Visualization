@@ -84,23 +84,21 @@
                     var baseline = 0;
                     var bars = [];
 
+                    svg.on("click", function(d) {
+                           baseline += 1;
+                           baseline %= 2;
+                           update();
+                        })
+
                     var entering = plot.selectAll(".bar")
                                     .data(benchmarks)
                                     .enter()
 
                     for(var i = 0; i < series.length; i++){
-                        bars.push(drawBars(entering.append("rect").attr("class", "bar"), i, true))
+                        bars.push(drawBars(entering.append("rect").attr("class", "bar"), i))
                     }
 
-                    function drawBars(selection, index, listen){
-                        if (listen){
-                            selection = selection
-                                          .on("click", function(d) {
-                                                  baseline = index;
-                                                  update();
-                                              })
-                        }
-
+                    function drawBars(selection, index){
                         if (index == baseline){
                             return selection
                                .attr("x", function(d) {
