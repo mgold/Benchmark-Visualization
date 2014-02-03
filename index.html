@@ -77,7 +77,11 @@
                                         .domain([0,w])
                                         .range(benchmark.range())
 
-                    time.domain([0.1, 10]); // Make more general or data-dependent?
+                    var max_difference = d3.max(parsed.benchmarks, function(arr){
+                        var extent = d3.extent(arr[1])
+                        return extent[1]/extent[0]
+                    })
+                    time.domain([1/max_difference, max_difference]);
                     var timeOf1 = time(1);
 
                     var baseline = 0;
@@ -194,7 +198,15 @@
                        .call(d3.svg.axis()
                                .scale(time)
                                .orient("left")
-                               .tickFormat(d3.format(".1f"))
+                               .tickFormat(function(d){
+                                    if (max_difference < 20){
+                                        return d3.format(".1f");
+                                    }else{
+                                       if (d.toString().match("^(0\.0*1|1.*)$"))
+                                           return d3.format("s")(d)
+                                       return "";
+                                    }
+                               })
                             )
 
                     var axis_label = svg.append("text")
