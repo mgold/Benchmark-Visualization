@@ -33,14 +33,16 @@
 
         benchmarks("data_petersen.json");
 
-        function benchmarks (datafile){
+        function benchmarks(datafile, total_width, total_height){
 
-			var w = 800;
-			var h = 400;
+            total_width |= 900;
+            total_height |= 500;
             var leftroom = 45;
-            var headroom = 30;
-            var footroom = 30;
             var rightroom = 30;
+            var headroom = 20;
+            var footroom = 30;
+            var w = total_width - leftroom - rightroom;
+            var h = total_height - headroom - footroom;
 
             //benchmark = set of bars
             //series = one bar in each set, color-coded
@@ -51,11 +53,10 @@
             var colors = d3.scale.category10()
                         .domain([0, 9])
 
-
 			var svg = d3.select("body")
 						.append("svg")
-						.attr("width", leftroom+w+rightroom)
-						.attr("height", headroom+h+footroom)
+						.attr("width", total_width)
+						.attr("height", total_height)
                         .attr("class", "benchmarks")
             var plot = svg.append("g")
                         .attr("transform", "translate("+String(leftroom)+","+String(headroom)+")")
@@ -169,7 +170,7 @@
                                       var half_width = this.getBBox().width / 2;
                                       var x = leftroom + legend_snap(mPos[0]) + benchmark.rangeBand()/2;
                                       x = Math.max(half_width, Math.min(leftroom+w-half_width, x))
-                                      var y = mPos[1] > timeOf1 ? headroom+h+(footroom/2) : headroom/3;
+                                      var y = mPos[1] > timeOf1 ? headroom+h+(footroom/2) : headroom/2;
                                       return "translate("+x+","+y+")"
                                   })
                     }
