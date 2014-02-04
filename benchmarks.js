@@ -1,4 +1,4 @@
-function benchmarks(datafile, total_width, total_height){
+function benchmarks(datafile, selector, total_width, total_height){
 
     total_width |= 900;
     total_height |= 500;
@@ -9,16 +9,8 @@ function benchmarks(datafile, total_width, total_height){
     var w = total_width - leftroom - rightroom;
     var h = total_height - headroom - footroom;
 
-    //benchmark = set of bars
-    //series = one bar in each set, color-coded
-    //time = y axis (normalized)
-    var benchmark = d3.scale.ordinal()
-    var time = d3.scale.log()
-                .range([h, 0])
-    var colors = d3.scale.category10()
-                .domain([0, 9])
-
-    var svg = d3.select("body")
+    selector |= "body";
+    var svg = d3.select(selector)
                 .append("svg")
                 .attr("width", total_width)
                 .attr("height", total_height)
@@ -35,6 +27,15 @@ function benchmarks(datafile, total_width, total_height){
         .attr("class", "background")
 
     function remove_underscores (s) {return s.split('_').join(' '); }
+
+    //benchmark = set of bars
+    //series = one bar in each set, color-coded
+    //time = y axis (normalized)
+    var benchmark = d3.scale.ordinal()
+    var time = d3.scale.log()
+                .range([h, 0])
+    var colors = d3.scale.category10()
+                .domain([0, 9])
 
     d3.json(datafile, function(err, parsed) {
             var series = parsed.series;
