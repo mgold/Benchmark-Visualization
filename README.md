@@ -24,7 +24,7 @@ paramterized over a number, use a line plot.)
 ###Inclusion
 Include the following lines in the document head.
 
-````javascript
+````html
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <link href="benchmarks.css" rel="stylesheet" type="text/css"></link>
 <script src="benchmarks.js" type="text/javascript"></script>
