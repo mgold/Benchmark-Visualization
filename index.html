@@ -203,7 +203,7 @@
                                .orient("left")
                                .tickFormat(function(d){
                                     if (max_difference < 20){
-                                        return d3.format(".1f")(d);
+                                        return d3.format(".1r")(d);
                                     }else{
                                        if (d.toString().match("^(0\.0*1|1.*)$"))
                                            return d3.format("s")(d)
