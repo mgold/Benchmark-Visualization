@@ -164,9 +164,9 @@
 
                         legendText.attr("transform", function (){
                                       var half_width = this.getBBox().width / 2;
-                                      var x = legend_snap(mPos[0]) + 2.9*bar_width;
-                                      x = Math.max(half_width, Math.min(w-half_width/3.5, x))
-                                      var y = mPos[1] > timeOf1 ? headroom+h+footroom : headroom/3;
+                                      var x = axis_w + legend_snap(mPos[0]) + benchmark.rangeBand()/2;
+                                      x = Math.max(half_width, Math.min(axis_w+w-half_width, x))
+                                      var y = mPos[1] > timeOf1 ? headroom+h+(footroom/2) : headroom/3;
                                       return "translate("+x+","+y+")"
                                   })
                     }
