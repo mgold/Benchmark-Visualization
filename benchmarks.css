@@ -5,13 +5,14 @@
         shape-rendering: crispEdges;
 }
 
-.benchmarks .label {
-        font-family: sans-serif;
-        font-size: 12px;
+.benchmarks text {
+    font-family: sans-serif;
+    pointer-events: none;
+    font-size: 10px;
 }
-.benchmarks .axis text {
-        font-family: sans-serif;
-        font-size: 10px;
+
+.benchmarks .label {
+        font-size: 12px;
 }
 
 .benchmarks .xaxis text {
@@ -20,5 +21,5 @@
 }
 
 .benchmarks rect.background {
-    fill: white;
+    opacity: 0;
 }
