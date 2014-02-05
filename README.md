@@ -32,17 +32,16 @@ Include the following lines in the document head.
 
 There is only one exposed function, `benchmarks(datafile, selector, width, height)`.
 * **datafile** is a string path to a json file in the format described below.
-* **selector** is an optional string D3-style selector to indicate a DOM element to be the parent of the visualizations's svg. The expected use when embedded in a larger webpage is `#id_of_element`. By default, appends to `body`.
+* **selector** is an optional string D3-style selector to indicate a DOM element to be the parent of the visualizations's svg. This may be `element_name`, `.class`, or the expected use case when embedding, `#element_id`. The default is `body`.
 * **width** and **height** are optional numbers to set the total dimensions of the svg element. The default is 900x500.
 
 ###JSON File Format
 
-Data is expected as a JSON file obeying this schema. The top-level object has
-two fields. The key `series` has a value of an array of strings (names of
-series). The `benchmarks` key is also an array. Each element is an array of two
-elements: a string (benchmark name), and an array of performances. Each array
-of performances must have the same length as the array of series. Examples are
-given in the repo.
+Data is expected as a JSON file with an object at the top level with the following keys. Examples are given in the repo.
+
+* The key **series** has a value of an array of strings (names of series).
+* The **benchmarks** key also indicates an array. Each element is an array of two elements: a string (benchmark name), and an array of numbers (performances). Each array of performances must have the same length as the array of series.
+* The optional key **y_label** is a string to display on the *y*-axis as "`y_label` Relative to `baseline`". If not supplied, defaults to "Execution Time".
 
 ###Known Issues
 * There are only 10 hard-coded colors (which correspond to series).

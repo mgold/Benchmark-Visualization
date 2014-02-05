@@ -47,6 +47,7 @@ function benchmarks(datafile, selector, total_width, total_height){
                 console.log(err);
                 return
             }
+            var y_label = parsed.y_label || "Execution Time";
             var series = parsed.series;
             var benchmarks = parsed.benchmarks;
             benchmark.domain(benchmarks.map(function (a) { return a[0]; }));
@@ -193,7 +194,7 @@ function benchmarks(datafile, selector, total_width, total_height){
                .attr("text-anchor", "left")
                .attr("class", "label")
              .append("tspan")
-               .text("Execution Time Relative to ")
+               .text(y_label + " Relative to ")
              .append("tspan")
                .style("font-weight", "bold")
                .attr("fill", colors(baseline))
