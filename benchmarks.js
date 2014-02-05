@@ -84,7 +84,6 @@ function benchmarks(datafile, selector, total_width, total_height){
                             .data(benchmarks)
                             .enter()
 
-
             for(var i = 0; i < series.length; i++){
                 bars.push(drawBars(entering.append("rect").attr("class", "bar"),
                 i, !touch_anywhere))
@@ -168,12 +167,13 @@ function benchmarks(datafile, selector, total_width, total_height){
             }
 
             function update(){
-                axis_label.transition()
+                svg.transition()
                             .duration(0)
                             .delay(750)
-                            .attr("fill", colors(baseline))
-                            .text(remove_underscores(series[baseline]))
-                            .each("end", touch_anywhere ? undefined : legend)
+                            .each("end", function(){
+                                if (!touch_anywhere){ legend()}
+                                y_axis();
+                            })
                 for(var i = 0; i < bars.length; i++){
                     drawBars(bars[i].transition().duration(1000), i);
                 }
@@ -207,15 +207,28 @@ function benchmarks(datafile, selector, total_width, total_height){
 
            var axis_label = svg
                .append("text")
-                   .attr("transform", "translate(10,"+(timeOf1+headroom+100)+"), rotate(-90)")
-                   .attr("text-anchor", "left")
+                   .attr("transform", "translate(10,"+total_height/2+"), rotate(-90)")
+                   .attr("text-anchor", "middle")
                    .attr("class", "label")
+            y_axis();
+            function y_axis(){
+               axis_label.selectAll("tspan").remove();
+               axis_label
                .append("tspan")
-                   .text(y_label + " Relative to ")
+                   .text(touch_anywhere ? y_label + " of " : y_label)
+               .call(function(d){ if (touch_anywhere){
+                    axis_label2 = d.append("tspan")
+                    .style("font-weight", "bold")
+                    .attr("fill", colors((baseline+1)%2))
+                    .text(remove_underscores(series[(baseline+1)%2]));
+                }})
+               .append("tspan")
+                   .text(" Relative to ")
                .append("tspan")
                    .style("font-weight", "bold")
                    .attr("fill", colors(baseline))
                    .text(remove_underscores(series[baseline]));
+            }
 
         });
 }
