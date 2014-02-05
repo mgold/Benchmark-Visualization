@@ -50,6 +50,11 @@ function benchmarks(datafile, selector, total_width, total_height){
             var y_label = parsed.y_label || "Execution Time";
             var series = parsed.series;
             var benchmarks = parsed.benchmarks;
+            if (series.length < 2) {
+                console.log("benchmarks: " + datafile + " must have at least two series");
+                return;
+            }
+            var touch_anywhere = series.length == 2;
             benchmark.domain(benchmarks.map(function (a) { return a[0]; }));
             benchmark.rangeRoundBands([0,w],0.3,0.1)
             var bar_width = benchmark.rangeBand() / (series.length - 1);
@@ -67,12 +72,22 @@ function benchmarks(datafile, selector, total_width, total_height){
             var baseline = 0;
             var bars = [];
 
+            if (touch_anywhere){
+                svg.on("click", function(d) {
+                       baseline += 1;
+                       baseline %= 2;
+                       update();
+                    })
+            }
+
             var entering = plot.selectAll(".bar")
                             .data(benchmarks)
                             .enter()
 
+
             for(var i = 0; i < series.length; i++){
-                bars.push(drawBars(entering.append("rect").attr("class", "bar"), i, true))
+                bars.push(drawBars(entering.append("rect").attr("class", "bar"),
+                i, !touch_anywhere))
             }
 
             function drawBars(selection, index, listen){
@@ -90,9 +105,8 @@ function benchmarks(datafile, selector, total_width, total_height){
                             return benchmark(d[0]) + index*bar_width;
                        })
                        .attr("y", timeOf1)
-                       .attr("width", 0.001)
-                       .attr("height", 0.001)
-                       .attr("fill", "white")
+                       .attr("width", 0)
+                       .attr("height", 0)
 
                 }else{
                     return selection
@@ -114,41 +128,43 @@ function benchmarks(datafile, selector, total_width, total_height){
 
             }
 
-            var legendText = svg.append("text").attr("text-anchor", "middle").attr("class", "label")
-            var old_mPos = [0,0];
-            plot.on("mousemove", function(){legend(d3.mouse(this))})
-            plot.on("mouseout", function(){legend([0,0])});
-            legend();
-            function legend (mPos){
-                if (mPos == undefined) {
-                    mPos = old_mPos;
-                }else{
-                    old_mPos = mPos;
+            if (!touch_anywhere){
+                var legendText = svg.append("text").attr("text-anchor", "middle").attr("class", "label")
+                var old_mPos = [0,0];
+                plot.on("mousemove", function(){legend(d3.mouse(this))})
+                plot.on("mouseout", function(){legend([0,0])});
+                legend();
+                function legend (mPos){
+                    if (mPos == undefined) {
+                        mPos = old_mPos;
+                    }else{
+                        old_mPos = mPos;
+                    }
+                    legendText.selectAll("tspan").remove();
+                    legendText.selectAll("tspan")
+                        .data(series)
+                        .enter()
+                        .append("tspan")
+                        .attr("fill", function(d, i){ return colors(i); })
+                        .text(function(d){return remove_underscores(d)+" "})
+                        .filter(function(d, i){ return baseline == i })
+                        .remove()
+
+                    legendText.selectAll("tspan")
+                        .append("tspan")
+                        .attr("fill", "black")
+                        .text("| ")
+                        .filter(function(d, i){ return i > series.length -3})
+                        .remove()
+
+                    legendText.attr("transform", function (){
+                                  var half_width = this.getBBox().width / 2;
+                                  var x = leftroom + legend_snap(mPos[0]) + benchmark.rangeBand()/2;
+                                  x = Math.max(half_width, Math.min(leftroom+w-half_width, x))
+                                  var y = mPos[1] > timeOf1 ? headroom+h+(footroom/2) : headroom/2;
+                                  return "translate("+x+","+y+")"
+                              })
                 }
-                legendText.selectAll("tspan").remove();
-                legendText.selectAll("tspan")
-                    .data(series)
-                    .enter()
-                    .append("tspan")
-                    .attr("fill", function(d, i){ return colors(i); })
-                    .text(function(d){return remove_underscores(d)+" "})
-                    .filter(function(d, i){ return baseline == i })
-                    .remove()
-
-                legendText.selectAll("tspan")
-                    .append("tspan")
-                    .attr("fill", "black")
-                    .text("| ")
-                    .filter(function(d, i){ return i > series.length -3})
-                    .remove()
-
-                legendText.attr("transform", function (){
-                              var half_width = this.getBBox().width / 2;
-                              var x = leftroom + legend_snap(mPos[0]) + benchmark.rangeBand()/2;
-                              x = Math.max(half_width, Math.min(leftroom+w-half_width, x))
-                              var y = mPos[1] > timeOf1 ? headroom+h+(footroom/2) : headroom/2;
-                              return "translate("+x+","+y+")"
-                          })
             }
 
             function update(){
@@ -157,7 +173,7 @@ function benchmarks(datafile, selector, total_width, total_height){
                             .delay(750)
                             .attr("fill", colors(baseline))
                             .text(remove_underscores(series[baseline]))
-                            .each("end", legend)
+                            .each("end", touch_anywhere ? undefined : legend)
                 for(var i = 0; i < bars.length; i++){
                     drawBars(bars[i].transition().duration(1000), i);
                 }
@@ -189,16 +205,17 @@ function benchmarks(datafile, selector, total_width, total_height){
                        })
                     )
 
-            var axis_label = svg.append("text")
-               .attr("transform", "translate(10,"+(timeOf1+headroom+100)+"), rotate(-90)")
-               .attr("text-anchor", "left")
-               .attr("class", "label")
-             .append("tspan")
-               .text(y_label + " Relative to ")
-             .append("tspan")
-               .style("font-weight", "bold")
-               .attr("fill", colors(baseline))
-               .text(remove_underscores(series[baseline]));
+           var axis_label = svg
+               .append("text")
+                   .attr("transform", "translate(10,"+(timeOf1+headroom+100)+"), rotate(-90)")
+                   .attr("text-anchor", "left")
+                   .attr("class", "label")
+               .append("tspan")
+                   .text(y_label + " Relative to ")
+               .append("tspan")
+                   .style("font-weight", "bold")
+                   .attr("fill", colors(baseline))
+                   .text(remove_underscores(series[baseline]));
 
         });
 }

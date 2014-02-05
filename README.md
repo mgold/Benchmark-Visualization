@@ -6,6 +6,14 @@ It is easy to embed in larger webpages using any data of the correct format.
 For a full description of the motivation and design, read the
 **[essay](http://www.eecs.tufts.edu/~mgolds07/icfp_viz/)**.
 
+##Features
+* Logairthmic scale, which is the only way to visualize multiplicative data without distortion
+* Axis adapts to range of data automatically
+* Interactively click a bar to rescale all data with that series as baseline
+* Automatically optimizes when exactly two series are present
+* Easily embedable: can specify DOM element and dimensions
+* Free and open source, built with d3.js
+
 ##Documentation
 
 ###Terminology
