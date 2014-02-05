@@ -1,4 +1,8 @@
 function benchmarks(datafile, selector, total_width, total_height){
+    if (!datafile){
+        console.log("benchmarks: No datafile provided.");
+        return;
+    }
 
     total_width |= 900;
     total_height |= 500;
@@ -9,7 +13,7 @@ function benchmarks(datafile, selector, total_width, total_height){
     var w = total_width - leftroom - rightroom;
     var h = total_height - headroom - footroom;
 
-    selector |= "body";
+    selector = selector || "body";
     var svg = d3.select(selector)
                 .append("svg")
                 .attr("width", total_width)
@@ -38,6 +42,11 @@ function benchmarks(datafile, selector, total_width, total_height){
                 .domain([0, 9])
 
     d3.json(datafile, function(err, parsed) {
+            if (err != null){
+                console.log("benchmarks: error loading file " + datafile);
+                console.log(err);
+                return
+            }
             var series = parsed.series;
             var benchmarks = parsed.benchmarks;
             benchmark.domain(benchmarks.map(function (a) { return a[0]; }));
