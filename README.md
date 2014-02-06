@@ -51,6 +51,19 @@ Data is expected as a JSON file with an object at the top level with the followi
 * The **benchmarks** key also indicates an array. Each element is an array of two elements: a string (benchmark name), and an array of numbers (performances). Each array of performances must have the same length as the array of series.
 * The optional key **y_label** is a string to display on the *y*-axis as "`y_label` Relative to `baseline`". If not supplied, defaults to "Execution Time".
 
+The script `format_csv.rb` is provided to convert csv files into this json
+format. Provide the input file as an argument and the result is printed on
+standard out. The script expects the fields to be
+`benchmark,series,performance`, grouped by benchmark, and series always in the
+same order for each benchmark. If your csv is not in this format, try something
+similar to
+
+````
+sed 's/\(.*\),\(.*\),\(.*\)/\2,\1,\3/' <you_data.csv | sort >your_data_formated.csv
+````
+
+This switches the first two fields and then sorts them.
+
 ###Known Issues
 * There are only 10 hard-coded colors (which correspond to series).
 * There is no support for benchmarks known for only some of the series. But conceptually, when a series with incomplete data is chosen to be the baseline, how should the benchmarks without data be scaled?
