@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Visualizing Benchmarks : See speedups over a baseline." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Visualizing Benchmarks</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/mgold/Benchmark-Visualization">View on GitHub</a>
+
+          <h1 id="project_title">Visualizing Benchmarks</h1>
+          <h2 id="project_tagline">See speedups over a baseline.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/mgold/Benchmark-Visualization/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/mgold/Benchmark-Visualization/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="visualizing-benchmarks" class="anchor" href="#visualizing-benchmarks"><span class="octicon octicon-link"></span></a>Visualizing Benchmarks</h1>
+
+<p>This is a visualization of benchmark data, i.e. improvements over a baseline.
+It is easy to embed in larger webpages using any data of the correct format.</p>
+
+<p>For a full description of the motivation and design, read the
+<strong><a href="http://www.eecs.tufts.edu/%7Emgolds07/icfp_viz/">essay</a></strong>.</p>
+
+<h2>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>Logairthmic scale, which is the only way to visualize multiplicative data without distortion</li>
+<li>Axis adapts to range of data automatically</li>
+<li>Interactively click a bar to rescale all data with that series as baseline</li>
+<li>Automatically optimizes when exactly two series are present</li>
+<li>Easily embedable: can specify DOM element and dimensions</li>
+<li>Free and open source, built with d3.js</li>
+</ul><h2>
+<a name="documentation" class="anchor" href="#documentation"><span class="octicon octicon-link"></span></a>Documentation</h2>
+
+<h3>
+<a name="terminology" class="anchor" href="#terminology"><span class="octicon octicon-link"></span></a>Terminology</h3>
+
+<p>This visualization is meant primarily for comparing performance on various tasks against a baseline. With that in mind,</p>
+
+<ul>
+<li>A <strong>series</strong> is a category of something being tested. This can be a programming language, computer architecture, or athlete. Visually these are colors.</li>
+<li>A <strong>benchmark</strong> is task on which each series is tested, resulting in a numeric <strong>performance</strong>. This can be software test batteries or the name of a atheletic event. Visually these are groups of columns.</li>
+<li>The <strong>baseline</strong> is the currently selected series. The performance of the other series are scaled relative to the baseline's performance in that benchmark. Visually the baseline is implicit, except that it is noted on the <em>y</em>-axis label.</li>
+</ul><p>Again: performance is scaled relative to another series's performance on the
+same benchmark, not the same series's performance on another benchmark. This is
+because benchmarks are expected to not be comparable tasks. Benchmarks are
+categorical; they have no order or relationship. (If you have one task
+paramterized over a number, use a line plot.)</p>
+
+<h3>
+<a name="inclusion" class="anchor" href="#inclusion"><span class="octicon octicon-link"></span></a>Inclusion</h3>
+
+<p>Include the following lines in the document head.</p>
+
+<div class="highlight highlight-html"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://d3js.org/d3.v3.min.js"</span> <span class="na">charset=</span><span class="s">"utf-8"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">"benchmarks.css"</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span><span class="nt">&gt;&lt;/link&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"benchmarks.js"</span> <span class="na">type=</span><span class="s">"text/javascript"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</pre></div>
+
+<p>There is only one exposed function, <code>benchmarks(datafile, selector, width, height)</code>.</p>
+
+<ul>
+<li>
+<strong>datafile</strong> is a string path to a json file in the format described below.</li>
+<li>
+<strong>selector</strong> is an optional string D3-style selector to indicate a DOM element to be the parent of the visualizations's svg. This may be <code>element_name</code>, <code>.class</code>, or the expected use case when embedding, <code>#element_id</code>. The default is <code>body</code>.</li>
+<li>
+<strong>width</strong> and <strong>height</strong> are optional numbers to set the total dimensions of the svg element. The default is 900x500.</li>
+</ul><h3>
+<a name="json-file-format" class="anchor" href="#json-file-format"><span class="octicon octicon-link"></span></a>JSON File Format</h3>
+
+<p>Data is expected as a JSON file with an object at the top level with the following keys. Examples are given in the repo.</p>
+
+<ul>
+<li>The key <strong>series</strong> has a value of an array of strings (names of series).</li>
+<li>The <strong>benchmarks</strong> key also indicates an array. Each element is an array of two elements: a string (benchmark name), and an array of numbers (performances). Each array of performances must have the same length as the array of series.</li>
+<li>The optional key <strong>y_label</strong> is a string to display on the <em>y</em>-axis as "<code>y_label</code> Relative to <code>baseline</code>". If not supplied, defaults to "Execution Time".</li>
+</ul><p>The script <code>format_csv.rb</code> is provided to convert csv files into this json
+format. Provide the input file as an argument and the result is printed on
+standard out. The script expects the fields to be
+<code>benchmark,series,performance</code>, grouped by benchmark, and series always in the
+same order for each benchmark. If your csv is not in this format, try something
+similar to</p>
+
+<pre><code>sed 's/\(.*\),\(.*\),\(.*\)/\2,\1,\3/' &lt;you_data.csv | sort &gt;your_data_formated.csv
+</code></pre>
+
+<p>This switches the first two fields and then sorts them.</p>
+
+<h3>
+<a name="known-issues" class="anchor" href="#known-issues"><span class="octicon octicon-link"></span></a>Known Issues</h3>
+
+<ul>
+<li>There are only 10 hard-coded colors (which correspond to series).</li>
+<li>There is no support for benchmarks known for only some of the series. But conceptually, when a series with incomplete data is chosen to be the baseline, how should the benchmarks without data be scaled?</li>
+<li>The font sizes are hard-coded and do not account for the window size (change this in the CSS if you need to).</li>
+<li>The data is expected to come from a file, rather than passing in a JS object directly. If you actually have a use case for this functionality, open an issue and it may be added.</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Visualizing Benchmarks maintained by <a href="https://github.com/mgold">mgold</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
