@@ -1,8 +1,8 @@
 .benchmarks .axis path,
 .benchmarks .axis line {
-        fill: none;
-        stroke: grey;
-        shape-rendering: crispEdges;
+    fill: none;
+    stroke: grey;
+    shape-rendering: crispEdges;
 }
 
 .benchmarks text {
@@ -12,12 +12,13 @@
 }
 
 .benchmarks .label {
-        font-size: 12px;
+    font-size: 12px;
 }
 
 .benchmarks .xaxis text {
-        font-weight: bold;
-        font-size: 11px;
+    font-weight: bold;
+    font-size: 11px;
+    text-shadow: -1px -1px #fff;
 }
 
 .benchmarks rect.background {
