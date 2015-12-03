@@ -1,3 +1,4 @@
+"use strict";
 function benchmarks(datafile, selector, total_width, total_height){
     if (!datafile){
         console.log("benchmarks: No datafile provided.");
@@ -133,7 +134,9 @@ function benchmarks(datafile, selector, total_width, total_height){
                 plot.on("mousemove", function(){legend(d3.mouse(this))})
                 plot.on("mouseout", function(){legend([0,0])});
                 legend();
-                function legend (mPos){
+            }
+            
+            function legend (mPos){
                     if (mPos == undefined) {
                         mPos = old_mPos;
                     }else{
@@ -164,7 +167,6 @@ function benchmarks(datafile, selector, total_width, total_height){
                                   return "translate("+x+","+y+")"
                               })
                 }
-            }
 
             function update(){
                 svg.transition()
